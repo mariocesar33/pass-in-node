@@ -6,3 +6,32 @@ Content-Type: application/json
   "details": "Um evento para quem é apaixonado por programação",
   "maximumAttendees": 100
 }
+
+###
+
+POST http://localhost:3333/events
+Content-Type: application/json
+
+{
+  "title": "Novo events 2",
+  "details": null,
+  "maximumAttendees": 1
+}
+
+###
+
+POST http://localhost:3333/events/adc0a16d-7fab-44d8-a99e-ad9f694e4905/attendees
+Content-Type: application/json
+
+{
+  "name": "Mário César",
+  "email": "mario33@cv.com"
+}
+
+###
+
+GET http://localhost:3333/events/abf9c842-9560-4588-a0a0-385a176be91e
+
+###
+
+GET http://localhost:3333/attendees/3/badge
