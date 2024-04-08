@@ -26,8 +26,19 @@ model Attendee {
   email     String
   createdAt DateTime @default(now()) @map("created_at")
 
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade) // quando o evento for apagado, apagar os participantes tambem
+  checkIn CheckIn?
 
   @@unique([eventId, email])
   @@map("attendees")
+}
+
+model CheckIn {
+  id         Int      @id @default(autoincrement())
+  attendeeId Int      @unique @map("attendee_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  attendee Attendee @relation(fields: [attendeeId], references: [id], onDelete: Cascade) //quando o participante for apagado ele vai apagar automaticamente o checkIn
+
+  @@map("check_ins")
 }

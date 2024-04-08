@@ -3,26 +3,29 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { prisma } from '../lib/prisma'
+import { BadRequest } from './_errors/bad-request'
 
 export async function getAttendeeBadge(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     '/attendees/:attendeeId/badge',
     {
       schema: {
+        summary: 'Get attendee badge',
+        tags: ['attendees'],
         params: z.object({
           attendeeId: z.coerce.number().int(),
         }),
-        // response: {
-        //   200: z.object({
-        //     badge: z.object({
-        //       id: z.number(),
-        //       name: z.string(),
-        //       email: z.string().email(),
-        //       eventTitle: z.string(),
-        //       checkInURL: z.string().url(),
-        //     }),
-        //   }),
-        // },
+        response: {
+          200: z.object({
+            badge: z.object({
+              id: z.number(),
+              name: z.string(),
+              email: z.string().email(),
+              eventTitle: z.string(),
+              checkInURL: z.string().url(),
+            }),
+          }),
+        },
       },
     },
     async (request, reply) => {
@@ -30,6 +33,7 @@ export async function getAttendeeBadge(app: FastifyInstance) {
 
       const attendee = await prisma.attendee.findUnique({
         select: {
+          id: true,
           name: true,
           email: true,
           event: {
@@ -44,10 +48,28 @@ export async function getAttendeeBadge(app: FastifyInstance) {
       })
 
       if (!attendee) {
-        throw new Error('Attendee not found.')
+        throw new BadRequest('Attendee not found.')
       }
 
-      return reply.send({ attendee })
+      // console.log(request.protocol), Pega apenas o protocolo (http)
+      // console.log(request.hostname), request.hostname => Pega apenas (localhost:3333), não pega o protocolo 'http'
+      // console.log(request.url), request.url => É só mente o path (/attendees/:attendeeId/badge)
+
+      const baseURL = `${request.protocol}://${request.hostname}`
+      // console.log(baseURL) => http://localhost:3333
+
+      // url do qr-code
+      const checkInURL = new URL(`/attendees/${attendee.id}/check-in`, baseURL)
+
+      return reply.send({
+        badge: {
+          id: attendee.id,
+          name: attendee.name,
+          email: attendee.email,
+          eventTitle: attendee.event.title,
+          checkInURL: checkInURL.toString(),
+        },
+      })
     },
   )
 }

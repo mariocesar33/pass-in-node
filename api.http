@@ -13,25 +13,33 @@ POST http://localhost:3333/events
 Content-Type: application/json
 
 {
-  "title": "Novo events 2",
+  "title": 123,
   "details": null,
   "maximumAttendees": 1
 }
 
 ###
 
-POST http://localhost:3333/events/adc0a16d-7fab-44d8-a99e-ad9f694e4905/attendees
+POST http://localhost:3333/events/9e9bd979-9d10-4915-b339-3786b1634f33/attendees
 Content-Type: application/json
 
 {
-  "name": "Mário César",
-  "email": "mario33@cv.com"
+  "name": "Wayne Silva",
+  "email": "wayne33@cv.com"
 }
 
 ###
 
-GET http://localhost:3333/events/abf9c842-9560-4588-a0a0-385a176be91e
+GET http://localhost:3333/events/9e9bd979-9d10-4915-b339-3786b1634f33
 
 ###
 
 GET http://localhost:3333/attendees/3/badge
+
+###
+
+GET http://localhost:3333/attendees/5/check-in
+
+###
+
+GET http://localhost:3333/events/8d79a8ae-fa1c-4fea-aec2-c8e9cbe8cd16/attendees?query=Mário
